@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101411">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GymProgress">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-180.png">
+<title>GymProgress — Fitness tracker</title>
+<style>
+:root{--bg:#101411;--panel:#191f1b;--panel2:#202822;--line:#303a32;--text:#f1f5f1;--muted:#a5b1a7;--accent:#a8e063;--accent2:#d6f5ad;--danger:#ff8b82}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{padding:24px max(18px,calc((100vw - 1050px)/2));border-bottom:1px solid var(--line);background:#151a16}
+.brand{display:flex;align-items:center;gap:12px}.logo{background:var(--accent);color:#172012;border-radius:12px;width:42px;height:42px;display:grid;place-items:center;font-size:22px;font-weight:900}
+h1{font-size:21px;margin:0}header p{color:var(--muted);margin:3px 0 0;font-size:13px}
+main{max-width:1050px;margin:0 auto;padding:22px 18px 60px}.layout{display:grid;grid-template-columns:310px minmax(0,1fr);gap:18px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;min-width:0}.panel h2{font-size:16px;margin:0 0 14px}
+label{display:block;color:var(--muted);font-size:12px;margin:12px 0 6px}
+input,select,button{font:inherit}input,select{width:100%;background:#101511;color:var(--text);border:1px solid #3a453c;border-radius:10px;padding:11px 12px;outline:none}input:focus,select:focus{border-color:var(--accent)}
+button{cursor:pointer;border:0;border-radius:10px;padding:10px 13px;font-weight:700}.primary{background:var(--accent);color:#192213}.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--line)}.small{padding:7px 10px;font-size:12px}.full{width:100%;margin-top:12px}
+.search{margin-bottom:12px}.exercise-list{display:flex;flex-direction:column;gap:6px;max-height:390px;overflow:auto}
+.exercise{display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;width:100%;background:transparent;color:var(--text);border:1px solid transparent;padding:10px;border-radius:10px;font-weight:600}
+.exercise:hover,.exercise.active{background:var(--panel2);border-color:#43513f}.exercise.active{box-shadow:inset 3px 0 var(--accent)}.exercise small{display:block;color:var(--muted);font-weight:400;font-size:11px}.empty{color:var(--muted);padding:16px 4px;font-size:13px}
+.topline{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.eyebrow{color:var(--accent);text-transform:uppercase;font-size:10px;letter-spacing:1.4px;font-weight:800}.selected-title{font-size:25px;margin:3px 0 4px}.muted{color:var(--muted)}.previous{background:#20291e;border:1px solid #3c4a34;border-radius:12px;padding:12px 14px;margin:16px 0}.previous strong{color:var(--accent2)}.previous p{margin:4px 0 0;font-size:13px}
+.table-head,.set-row{display:grid;grid-template-columns:54px minmax(70px,1fr) minmax(70px,1fr) 36px;gap:8px;align-items:center}.table-head{color:var(--muted);font-size:11px;padding:0 4px 7px}.set-row{padding:7px 0;border-top:1px solid var(--line)}.set-num{font-weight:700;color:var(--muted);padding-left:5px}.set-row input{padding:10px 8px;text-align:center}.remove{background:transparent;color:var(--muted);padding:6px;font-size:18px}.remove:hover{color:var(--danger)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.actions button{flex:1}.savebar{display:flex;gap:10px;align-items:center;margin-top:16px}.savebar button{flex:1}.notice{font-size:12px;color:var(--muted);margin-top:10px}
+.history{margin-top:18px}.history h3{font-size:14px;margin:0 0 10px}.history-item{border-top:1px solid var(--line);padding:11px 0}.history-item:first-of-type{border-top:0}.history-date{display:flex;justify-content:space-between;gap:10px;font-size:13px;font-weight:700}.history-detail{color:var(--muted);font-size:12px;margin-top:5px}.tag{display:inline-block;color:var(--accent2);background:#2a3525;padding:3px 7px;border-radius:6px;font-size:11px;margin-left:5px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0}.stat{background:var(--panel2);border-radius:10px;padding:11px}.stat span{display:block;color:var(--muted);font-size:11px}.stat strong{display:block;font-size:19px;margin-top:3px}
+hr{border:0;border-top:1px solid var(--line);margin:18px 0}.toast{color:var(--accent2);font-size:13px;min-height:18px}
+@media(max-width:760px){.layout{grid-template-columns:1fr}.exercise-list{max-height:220px}.selected-title{font-size:22px}.panel{padding:15px}.stats{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:390px){.table-head,.set-row{grid-template-columns:38px minmax(60px,1fr) minmax(60px,1fr) 30px;gap:5px}.stat strong{font-size:16px}}
+</style>
+</head>
+<body>
+<header><div class="brand"><div class="logo">G</div><div><h1>GymProgress</h1><p>Hou je sets bij. Zie je vooruitgang. Word sterker.</p></div></div></header>
+<main>
+<div class="layout">
+<aside class="panel">
+<h2>Oefeningen</h2>
+<input class="search" id="search" type="search" placeholder="🔎  Zoek een oefening..." aria-label="Zoek oefening">
+<div class="exercise-list" id="exerciseList"></div>
+<hr>
+<h2>Oefening toevoegen</h2>
+<label for="newExercise">Naam van de oefening</label>
+<input id="newExercise" placeholder="Bijv. Incline dumbbell press">
+<label for="newGroup">Spiergroep (optioneel)</label>
+<select id="newGroup"><option value="Borst">Borst</option><option value="Rug">Rug</option><option value="Schouders">Schouders</option><option value="Biceps">Biceps</option><option value="Triceps">Triceps</option><option value="Benen">Benen</option><option value="Buik">Buik</option><option value="Billen">Billen</option><option value="Full body">Full body</option><option value="Overig">Overig</option></select>
+<button class="primary full" id="addExercise">+ Oefening toevoegen</button>
+<p class="notice">Je eigen oefeningen en trainingsgegevens worden in deze browser bewaard.</p>
+</aside>
+<section class="panel">
+<div id="workout">
+<div class="topline"><div><div class="eyebrow">Training bijhouden</div><h2 class="selected-title">Kies een oefening</h2><p class="muted">Zoek links een oefening of voeg er zelf een toe.</p></div></div>
+</div>
+</section>
+</div>
+</main>
+<script>
+const starter = [
+["Bench press","Borst"],["Incline dumbbell press","Borst"],["Chest fly","Borst"],["Lat pulldown","Rug"],["Seated cable row","Rug"],["Barbell row","Rug"],["Pull-up","Rug"],["Shoulder press","Schouders"],["Lateral raise","Schouders"],["Bicep curl","Biceps"],["Hammer curl","Biceps"],["Triceps pushdown","Triceps"],["Squat","Benen"],["Leg press","Benen"],["Romanian deadlift","Benen"],["Leg curl","Benen"],["Leg extension","Benen"],["Calf raise","Benen"],["Hip thrust","Billen"],["Plank","Buik"]
+];
+const KEY="gymprogress_v1";
+let data;
+try{data=JSON.parse(localStorage.getItem(KEY))||null}catch(e){data=null}
+if(!data)data={exercises:starter.map((x,i)=>({id:"e"+i,name:x[0],group:x[1]})),sessions:[]};
+let selectedId=data.exercises[0]?.id||null, draft=[];
+const $=id=>document.getElementById(id);
+function persist(){localStorage.setItem(KEY,JSON.stringify(data))}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function exerciseById(id){return data.exercises.find(e=>e.id===id)}
+function sessionsFor(id){return data.sessions.filter(s=>s.exerciseId===id).sort((a,b)=>b.date.localeCompare(a.date)||b.savedAt-a.savedAt)}
+function formatDate(s){return new Date(s+"T12:00:00").toLocaleDateString("nl-BE",{day:"numeric",month:"short",year:"numeric"})}
+function volume(sets){return sets.reduce((sum,s)=>sum+(Number(s.kg)||0)*(Number(s.reps)||0),0)}
+function renderList(){
+ const q=$("search").value.trim().toLowerCase();
+ const list=data.exercises.filter(e=>(e.name+" "+e.group).toLowerCase().includes(q)).sort((a,b)=>a.name.localeCompare(b.name));
+ $("exerciseList").innerHTML=list.length?list.map(e=>`<button class="exercise ${e.id===selectedId?"active":""}" data-id="${esc(e.id)}"><span>${esc(e.name)}<small>${esc(e.group||"Overig")}</small></span><span>›</span></button>`).join(""):`<div class="empty">Geen oefeningen gevonden.</div>`;
+ $("exerciseList").querySelectorAll("[data-id]").forEach(b=>b.addEventListener("click",()=>{selectedId=b.dataset.id;draft=[];renderList();renderWorkout()}));
+}
+function renderWorkout(){
+ const e=exerciseById(selectedId), root=$("workout");
+ if(!e){root.innerHTML='<div class="empty">Voeg een oefening toe om te beginnen.</div>';return}
+ const sessions=sessionsFor(e.id), last=sessions[0];
+ if(!draft.length)draft=[{kg:"",reps:""},{kg:"",reps:""},{kg:"",reps:""}];
+ const allSets=sessions.flatMap(s=>s.sets), bestKg=allSets.reduce((m,s)=>Math.max(m,Number(s.kg)||0),0);
+ const bestVolume=allSets.reduce((m,s)=>Math.max(m,volume(s.sets||[])),0);
+ root.innerHTML=`
+ <div class="topline"><div><div class="eyebrow">Training bijhouden</div><h2 class="selected-title">${esc(e.name)}</h2><span class="muted">${esc(e.group||"Overig")}</span></div><button class="secondary small" id="deleteExercise">Verwijder oefening</button></div>
+ <div class="stats"><div class="stat"><span>Aantal trainingen</span><strong>${sessions.length}</strong></div><div class="stat"><span>Zwaarste gewicht</span><strong>${bestKg} <small style="font-size:11px">kg</small></strong></div><div class="stat"><span>Laatste sessie</span><strong style="font-size:14px">${last?esc(formatDate(last.date)):"—"}</strong></div></div>
+ ${last?`<div class="previous"><strong>Vorige keer · ${esc(formatDate(last.date))}</strong><p>${last.sets.map((s,i)=>`Set ${i+1}: ${esc(s.kg)} kg × ${esc(s.reps)} reps`).join("　·　")}</p><p>Totaal volume: ${Math.round(volume(last.sets)).toLocaleString("nl-BE")} kg · ${last.sets.length} sets</p></div>`:`<div class="previous"><strong>Nog geen vorige training</strong><p>Vul hieronder je sets in. Je kunt ze bij je volgende training vergelijken.</p></div>`}
+ <label for="sessionDate">Datum van de training</label><input id="sessionDate" type="date" value="${new Date().toLocaleDateString('en-CA')}">
+ <div style="margin-top:17px" class="table-head"><span>Set</span><span>Gewicht (kg)</span><span>Reps</span><span></span></div>
+ <div id="sets">${draft.map((s,i)=>`<div class="set-row"><div class="set-num">${i+1}</div><input type="number" min="0" step="0.5" inputmode="decimal" placeholder="kg" aria-label="Gewicht set ${i+1}" data-field="kg" data-index="${i}" value="${esc(s.kg)}"><input type="number" min="0" step="1" inputmode="numeric" placeholder="reps" aria-label="Herhalingen set ${i+1}" data-field="reps" data-index="${i}" value="${esc(s.reps)}"><button class="remove" data-remove="${i}" title="Verwijder set" aria-label="Verwijder set">×</button></div>`).join("")}</div>
+ <div class="actions"><button class="secondary" id="addSet">+ Set toevoegen</button><button class="secondary" id="clearSets">Leegmaken</button></div>
+ <div class="savebar"><button class="primary" id="saveSession">Training opslaan</button></div><div class="toast" id="toast" aria-live="polite"></div>
+ <div class="history"><h3>Trainingsgeschiedenis</h3>${sessions.length?sessions.map(s=>`<div class="history-item"><div class="history-date"><span>${esc(formatDate(s.date))}<span class="tag">${s.sets.length} sets</span></span><span>${Math.round(volume(s.sets)).toLocaleString("nl-BE")} kg volume</span></div><div class="history-detail">${s.sets.map((x,i)=>`Set ${i+1}: ${esc(x.kg)} kg × ${esc(x.reps)}`).join("　·　")}</div></div>`).join(""):'<p class="muted" style="font-size:13px">Je opgeslagen trainingen verschijnen hier.</p>'}</div>`;
+ $("deleteExercise").onclick=()=>{if(confirm(`Oefening "${e.name}" en de bijbehorende geschiedenis verwijderen?`)){data.exercises=data.exercises.filter(x=>x.id!==e.id);data.sessions=data.sessions.filter(s=>s.exerciseId!==e.id);selectedId=data.exercises[0]?.id||null;draft=[];persist();renderList();renderWorkout()}};
+ $("sets").querySelectorAll("input").forEach(inp=>inp.addEventListener("input",()=>{draft[Number(inp.dataset.index)][inp.dataset.field]=inp.value}));
+ $("sets").querySelectorAll("[data-remove]").forEach(btn=>btn.addEventListener("click",()=>{if(draft.length<=1){alert("Laat minstens één set staan.");return}draft.splice(Number(btn.dataset.remove),1);renderWorkout()}));
+ $("addSet").onclick=()=>{draft.push({kg:"",reps:""});renderWorkout();const inputs=$("sets").querySelectorAll("input");inputs[inputs.length-2]?.focus()};
+ $("clearSets").onclick=()=>{draft=[{kg:"",reps:""},{kg:"",reps:""},{kg:"",reps:""}];renderWorkout()};
+ $("saveSession").onclick=()=>{
+   const sets=draft.map(s=>({kg:String(s.kg).trim(),reps:String(s.reps).trim()}));
+   if(sets.some(s=>s.kg===""||s.reps==="")){$("toast").textContent="Vul voor elke set zowel gewicht als reps in.";return}
+   if(sets.some(s=>Number(s.kg)<0||Number(s.reps)<0||!Number.isFinite(Number(s.kg))||!Number.isFinite(Number(s.reps)))){$("toast").textContent="Gebruik geldige, positieve getallen.";return}
+   const date=$("sessionDate").value;if(!date){$("toast").textContent="Kies een datum.";return}
+   data.sessions.push({exerciseId:e.id,date,sets,savedAt:Date.now()});persist();draft=[];renderWorkout();
+ };
+}
+$("search").addEventListener("input",renderList);
+$("addExercise").onclick=()=>{const name=$("newExercise").value.trim();if(!name){$("newExercise").focus();return}if(data.exercises.some(e=>e.name.toLowerCase()===name.toLowerCase())){alert("Deze oefening bestaat al.");return}const e={id:"e"+Date.now(),name,group:$("newGroup").value};data.exercises.push(e);selectedId=e.id;draft=[];$("newExercise").value="";$("search").value="";persist();renderList();renderWorkout()};
+renderList();renderWorkout();
+</script>
+<script>if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) { window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {})); }</script>
+</body>
+</html>
